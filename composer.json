@@ -1,0 +1,29 @@
+{
+    "name": "reconmap/command-output-parsers",
+    "description": "Parsers for many security command outputs in the form of a PHP library",
+    "type": "library",
+    "license": "LGPL-3.0-or-later",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Santiago Lizardo",
+            "email": "santiagolizardo@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "league/html-to-markdown": "5.1.x-dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Reconmap\\CommandOutputParsers\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Reconmap\\CommandOutputParsers\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    }
+}
