@@ -1,5 +1,10 @@
 # Reconmap command output parsers library
 
+## Requirements
+
+* PHP8.1
+* Composer
+
 ## Usage
 
 ```shell
