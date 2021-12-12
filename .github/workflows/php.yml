@@ -1,5 +1,8 @@
 name: PHP Composer
 
+env:
+  XDEBUG_MODE: coverage
+
 on:
   push:
     branches: [ master ]
