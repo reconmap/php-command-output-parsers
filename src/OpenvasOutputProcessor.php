@@ -16,8 +16,12 @@ class OpenvasOutputProcessor extends AbstractCommandParser implements Vulnerabil
 
         foreach ($xml->report->results->result as $rawHost) {
             $host = [
-                'name' => (string)$rawHost['host']
+                'name' => (string)$rawHost->host
             ];
+
+            if(!empty($rawHost->port)) {
+                $host['port'] = (string)$rawHost->port;
+            }
 
             foreach ($rawHost->nvt as $rawVulnerability) {
                 $vulnerability = new Vulnerability();
@@ -41,6 +45,8 @@ class OpenvasOutputProcessor extends AbstractCommandParser implements Vulnerabil
 
                 
                 $vulnerability->external_refs = (string)$rawVulnerability->xref;
+
+                // @todo process refs/ref type[url] id
                 $vulnerability->description = preg_replace('/^ +/', '', (string)$rawVulnerability->description);
 
                 $risk = strtolower((string)$rawVulnerability->threat);
