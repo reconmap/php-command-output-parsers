@@ -7,9 +7,9 @@ use Reconmap\CommandOutputParsers\Models\AssetKind;
 use Reconmap\CommandOutputParsers\Models\ProcessorResult;
 use Reconmap\CommandOutputParsers\Models\Vulnerability;
 
-class TestsslOutputProcessor
+class TestsslOutputProcessor extends AbstractOutputProcessor
 {
-    public function parseVulnerabilities(string $path): ProcessorResult
+    public function process(string $path): ProcessorResult
     {
         $result = new ProcessorResult();
 

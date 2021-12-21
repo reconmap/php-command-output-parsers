@@ -6,10 +6,6 @@ use GlobIterator;
 
 class ProcessorFactory
 {
-    public function __construct()
-    {
-    }
-
     public function createFromOutputParserName(string $outputParserName): ?AbstractOutputProcessor
     {
         $className = 'Reconmap\\CommandOutputParsers\\' . ucfirst($outputParserName) . 'OutputProcessor';

@@ -1,6 +1,20 @@
 [![codecov](https://codecov.io/gh/reconmap/php-command-output-parsers/branch/master/graph/badge.svg?token=t3ODnO2R8u)](https://codecov.io/gh/reconmap/php-command-output-parsers)
 
-# Reconmap command output parsers library
+# Reconmap security command output parsers library
+
+## Supported tools
+
+- Burp
+- Metasploit
+- Nessus
+- Nmap
+- Nuclei
+- OpenVAS
+- Qualys
+- SQLmap
+- Subfinder
+- TestSSL
+- ZAP
 
 ## Requirements
 

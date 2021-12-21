@@ -7,7 +7,7 @@ class TestsslOutputProcessorTest extends ParserTestCase
     public function testParsingVulnerabilities()
     {
         $processor = new TestsslOutputProcessor;
-        $processorResults = $processor->parseVulnerabilities($this->getResourceFilePath('testssl.json'));
+        $processorResults = $processor->process($this->getResourceFilePath('testssl.json'));
         $vulnerabilities = $processorResults->getVulnerabilities();
         $this->assertCount(5, $vulnerabilities);
 
