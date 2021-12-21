@@ -2,29 +2,35 @@
 
 namespace Reconmap\CommandOutputParsers;
 
-class NmapOutputProcessor extends AbstractCommandParser implements VulnerabilityParser
+use Reconmap\CommandOutputParsers\Models\Asset;
+use Reconmap\CommandOutputParsers\Models\AssetKind;
+use Reconmap\CommandOutputParsers\Models\ProcessorResult;
+
+class NmapOutputProcessor extends AbstractOutputProcessor
 {
 
-    public function parseVulnerabilities(string $path): array
+    public function process(string $path): ProcessorResult
     {
-        $vulnerabilities = [];
+        $result = new ProcessorResult();
 
         $xml = simplexml_load_file($path);
         foreach ($xml->host as $host) {
-            $hostAddress = $host->address['addr'];
+            $hostAddress = (string)$host->address['addr'];
+            $hostAsset = new Asset(kind: AssetKind::Hostname, value: $hostAddress);
+            $hostAsset->addTag((string)$host->address['addrtype']);
+
             foreach ($host->ports->port as $port) {
                 if ((string)$port->state['state'] == 'open') {
                     $portNumber = (int)$port['portid'];
-                    $vulnerability = new Vulnerability;
-                    $vulnerability->summary = "Port $portNumber has been left open.";
-                    $vulnerability->description = "The port $portNumber is open and could be used by an attacker to get into your system. Unless you need this port open consider shutting the service down or restricting access using a firewall.";
 
-                    $vulnerability->host = (object)['name' => (string)$hostAddress];
-                    $vulnerabilities[] = $vulnerability;
+                    $portAsset = new Asset(kind: AssetKind::Port, value: strval($portNumber));
+                    $hostAsset->addChild($portAsset);
                 }
             }
+
+            $result->addAsset($hostAsset);
         }
 
-        return $vulnerabilities;
+        return $result;
     }
 }

@@ -2,12 +2,16 @@
 
 namespace Reconmap\CommandOutputParsers;
 
-class SubfinderOutputProcessor extends AbstractCommandParser implements HostParser
+use Reconmap\CommandOutputParsers\Models\Asset;
+use Reconmap\CommandOutputParsers\Models\AssetKind;
+use Reconmap\CommandOutputParsers\Models\ProcessorResult;
+
+class SubfinderOutputProcessor extends AbstractOutputProcessor
 {
 
-    public function parseHost(string $path): array
+    public function process(string $path): ProcessorResult
     {
-        $hosts = [];
+        $result = new ProcessorResult();
 
         $lines = file($path);
         foreach ($lines as $line) {
@@ -19,13 +23,12 @@ class SubfinderOutputProcessor extends AbstractCommandParser implements HostPars
             }
              */
             $json = json_decode($line);
-            $host = [
-                'name' => $json->host
-            ];
 
-            $hosts[] = (object)$host;
+            $hostAsset = new Asset(kind: AssetKind::Hostname, value: $json->host);
+
+            $result->addAsset($hostAsset);
         }
 
-        return $hosts;
+        return $result;
     }
 }

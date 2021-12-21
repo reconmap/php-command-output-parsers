@@ -2,12 +2,17 @@
 
 namespace Reconmap\CommandOutputParsers;
 
-class NucleiOutputProcessor extends AbstractCommandParser implements VulnerabilityParser
+use Reconmap\CommandOutputParsers\Models\Asset;
+use Reconmap\CommandOutputParsers\Models\AssetKind;
+use Reconmap\CommandOutputParsers\Models\ProcessorResult;
+use Reconmap\CommandOutputParsers\Models\Vulnerability;
+
+class NucleiOutputProcessor extends AbstractOutputProcessor
 {
 
-    public function parseVulnerabilities(string $path): array
+    public function process(string $path): ProcessorResult
     {
-        $vulnerabilities = [];
+        $result = new ProcessorResult();
 
         $lines = file($path);
         foreach ($lines as $line) {
@@ -28,23 +33,21 @@ class NucleiOutputProcessor extends AbstractCommandParser implements Vulnerabili
             }
              */
             $json = json_decode($line);
-            $host = [
-                'name' => $json->host
-            ];
+
+            $hostAsset = new Asset(kind: AssetKind::Hostname, value: $json->host);
 
             $vulnerability = new Vulnerability();
             $vulnerability->summary = $json->info->name;
             $vulnerability->description = $line;
             $vulnerability->tags = explode(',', $json->info->tags);
             $vulnerability->severity = $json->info->severity;
-
-            // Dynamic props
-            $vulnerability->host = (object)$host;
             $vulnerability->severity = (string)$json->info->severity;
 
-            $vulnerabilities[] = $vulnerability;
+            $vulnerability->asset = $hostAsset;
+
+            $result->addVulnerability($vulnerability);
         }
 
-        return $vulnerabilities;
+        return $result;
     }
 }

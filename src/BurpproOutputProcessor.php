@@ -3,12 +3,16 @@
 namespace Reconmap\CommandOutputParsers;
 
 use League\HTMLToMarkdown\HtmlConverter;
+use Reconmap\CommandOutputParsers\Models\Asset;
+use Reconmap\CommandOutputParsers\Models\AssetKind;
+use Reconmap\CommandOutputParsers\Models\ProcessorResult;
+use Reconmap\CommandOutputParsers\Models\Vulnerability;
 
-class BurpproOutputProcessor extends AbstractCommandParser implements VulnerabilityParser
+class BurpproOutputProcessor extends AbstractOutputProcessor
 {
-    public function parseVulnerabilities(string $path): array
+    public function process(string $path): ProcessorResult
     {
-        $vulnerabilities = [];
+        $result = new ProcessorResult();
 
         $xml = simplexml_load_file($path);
 
@@ -21,23 +25,23 @@ class BurpproOutputProcessor extends AbstractCommandParser implements Vulnerabil
             $remediation = (string)$rawVulnerability->remediationDetail;
             if (empty($remediation)) $remediation = null;
 
-            $risk = strtolower((string)$rawVulnerability->risk_factor);
-
             $vulnerability = new Vulnerability();
+
+            $risk = strtolower((string)$rawVulnerability->risk_factor);
+            $vulnerability->risk = $risk;
+
+            $vulnerability->severity = (string)$rawVulnerability['severity'];
             $vulnerability->summary = (string)$rawVulnerability->name;
             $htmlDescription = (string)$rawVulnerability->issueDetail;
             $description = $markdown->convert($htmlDescription);
             $vulnerability->description = preg_replace('/^ +/', '', $description);
-            $vulnerability->risk = $risk;
             $vulnerability->remediation = $remediation;
 
-            // Dynamic props
-            $vulnerability->host = (object)['name' => (string)$rawVulnerability->host];
-            $vulnerability->severity = (string)$rawVulnerability['severity'];
+            $vulnerability->asset = new Asset(kind: AssetKind::Hostname, value: (string)$rawVulnerability->host);
 
-            $vulnerabilities[] = $vulnerability;
+            $result->addVulnerability($vulnerability);
         }
 
-        return $vulnerabilities;
+        return $result;
     }
 }

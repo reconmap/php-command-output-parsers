@@ -2,13 +2,15 @@
 
 namespace Reconmap\CommandOutputParsers;
 
-class SqlmapLogProcessorTest extends ParserTestCase
+class SqlmapOutputProcessorTest extends ParserTestCase
 {
 
     public function testParseVulnerabilities()
     {
         $processor = new SqlmapOutputProcessor();
-        $vulnerabilities = $processor->parseVulnerabilities($this->getResourceFilePath('sqlmap-log-example.txt'));
+        $result = $processor->process($this->getResourceFilePath('sqlmap-log-example.txt'));
+        $vulnerabilities = $result->getVulnerabilities();
+
         $this->assertCount(1, $vulnerabilities);
         $this->assertEquals("SQL can be injected using parameter 'username (POST)'", $vulnerabilities[0]->description);
     }

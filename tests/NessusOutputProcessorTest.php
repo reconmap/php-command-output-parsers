@@ -2,13 +2,14 @@
 
 namespace Reconmap\CommandOutputParsers;
 
-class NessusProcessorTest extends ParserTestCase
+class NessusOutputProcessorTest extends ParserTestCase
 {
 
     public function testParseVulnerabilities()
     {
         $processor = new NessusOutputProcessor();
-        $vulnerabilities = $processor->parseVulnerabilities($this->getResourceFilePath('nessus-2.xml'));
+        $result = $processor->process($this->getResourceFilePath('nessus-2.xml'));
+        $vulnerabilities = $result->getVulnerabilities();
         $this->assertCount(5, $vulnerabilities);
         $this->assertEquals('Protect your target with an IP filter.', $vulnerabilities[4]->remediation);
     }
@@ -16,7 +17,8 @@ class NessusProcessorTest extends ParserTestCase
     public function testParseVulnerabilitiesIncludingCvssData()
     {
         $processor = new NessusOutputProcessor();
-        $vulnerabilities = $processor->parseVulnerabilities($this->getResourceFilePath('nessus-1.xml'));
+        $result = $processor->process($this->getResourceFilePath('nessus-1.xml'));
+        $vulnerabilities = $result->getVulnerabilities();
 
         $this->assertCount(288, $vulnerabilities);
         $this->assertEquals(5.1, $vulnerabilities[8]->cvss_score);

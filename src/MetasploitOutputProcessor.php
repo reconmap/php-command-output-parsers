@@ -2,35 +2,38 @@
 
 namespace Reconmap\CommandOutputParsers;
 
-class MetasploitOutputProcessor extends AbstractCommandParser implements VulnerabilityParser
+use Reconmap\CommandOutputParsers\Models\Asset;
+use Reconmap\CommandOutputParsers\Models\AssetKind;
+use Reconmap\CommandOutputParsers\Models\ProcessorResult;
+use Reconmap\CommandOutputParsers\Models\Vulnerability;
+
+class MetasploitOutputProcessor extends AbstractOutputProcessor
 {
 
-    public function parseVulnerabilities(string $path): array
+    public function process(string $path): ProcessorResult
     {
-        $vulnerabilities = [];
+        $result = new ProcessorResult();
 
         $xml = simplexml_load_file($path);
 
         foreach ($xml->hosts->host as $rawHost) {
-            $host = [
-                'name' => (string)$rawHost->name
-            ];
+            $asset = new Asset(kind: AssetKind::Hostname, value: (string)$rawHost->name);
 
             foreach ($rawHost->vulns->vuln as $rawVulnerability) {
                 $vulnerability = new Vulnerability();
                 $vulnerability->summary = (string)$rawVulnerability->name;
                 $vulnerability->risk = 'medium';
                 // Dynamic props
-                $vulnerability->host = (object)$host;
+                $vulnerability->asset = $asset;
 
                 if ((string)$rawVulnerability->info !== 'NULL') {
                     $vulnerability->description = (string)$rawVulnerability->info;
                 }
 
-                $vulnerabilities[] = $vulnerability;
+                $result->addVulnerability($vulnerability);
             }
         }
 
-        return $vulnerabilities;
+        return $result;
     }
 }

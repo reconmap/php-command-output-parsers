@@ -2,12 +2,15 @@
 
 namespace Reconmap\CommandOutputParsers;
 
-class ZapOutputProcessor extends AbstractCommandParser implements VulnerabilityParser
+use Reconmap\CommandOutputParsers\Models\ProcessorResult;
+use Reconmap\CommandOutputParsers\Models\Vulnerability;
+
+class ZapOutputProcessor extends AbstractOutputProcessor
 {
 
-    public function parseVulnerabilities(string $path): array
+    public function process(string $path): ProcessorResult
     {
-        $vulnerabilities = [];
+        $result = new ProcessorResult();
 
         $xml = simplexml_load_file($path);
         foreach ($xml->site->alerts->alertitem as $alertItem) {
@@ -19,9 +22,10 @@ class ZapOutputProcessor extends AbstractCommandParser implements VulnerabilityP
             if (!is_null($risk)) {
                 $vulnerability->risk = strtolower($risk);
             }
-            $vulnerabilities[] = $vulnerability;
+
+            $result->addVulnerability($vulnerability);
         }
 
-        return $vulnerabilities;
+        return $result;
     }
 }

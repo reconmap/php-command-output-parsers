@@ -2,13 +2,15 @@
 
 namespace Reconmap\CommandOutputParsers;
 
+use GlobIterator;
+
 class ProcessorFactory
 {
     public function __construct()
     {
     }
 
-    public function createFromOutputParserName(string $outputParserName): ?AbstractCommandParser
+    public function createFromOutputParserName(string $outputParserName): ?AbstractOutputProcessor
     {
         $className = 'Reconmap\\CommandOutputParsers\\' . ucfirst($outputParserName) . 'OutputProcessor';
 
@@ -22,7 +24,7 @@ class ProcessorFactory
     public function getAll(): array
     {
         $currentDir = __DIR__;
-        $fileIterator = new \GlobIterator("$currentDir/*OutputProcessor.php");
+        $fileIterator = new GlobIterator("$currentDir/*OutputProcessor.php");
 
         $list = [];
         foreach ($fileIterator as $file) {

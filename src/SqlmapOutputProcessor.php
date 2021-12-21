@@ -2,12 +2,15 @@
 
 namespace Reconmap\CommandOutputParsers;
 
-class SqlmapOutputProcessor extends AbstractCommandParser implements VulnerabilityParser
+use Reconmap\CommandOutputParsers\Models\ProcessorResult;
+use Reconmap\CommandOutputParsers\Models\Vulnerability;
+
+class SqlmapOutputProcessor extends AbstractOutputProcessor
 {
 
-    public function parseVulnerabilities(string $path): array
+    public function process(string $path): ProcessorResult
     {
-        $vulnerabilities = [];
+        $result = new ProcessorResult();
 
         $logContent = file_get_contents($path);
 
@@ -17,9 +20,10 @@ class SqlmapOutputProcessor extends AbstractCommandParser implements Vulnerabili
             $vulnerability = new Vulnerability;
             $vulnerability->summary = "SQL injection";
             $vulnerability->description = "SQL can be injected using parameter '$parameter'";
-            $vulnerabilities[] = $vulnerability;
+
+            $result->addVulnerability($vulnerability);
         }
 
-        return $vulnerabilities;
+        return $result;
     }
 }

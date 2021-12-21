@@ -2,25 +2,25 @@
 
 namespace Reconmap\CommandOutputParsers;
 
-class OpenvasOutputProcessor extends AbstractCommandParser implements VulnerabilityParser
+use Reconmap\CommandOutputParsers\Models\Asset;
+use Reconmap\CommandOutputParsers\Models\AssetKind;
+use Reconmap\CommandOutputParsers\Models\ProcessorResult;
+use Reconmap\CommandOutputParsers\Models\Vulnerability;
+
+class OpenvasOutputProcessor extends AbstractOutputProcessor
 {
-    /**
-     * @param string $path
-     * @return array<Vulnerability>
-     */
-    public function parseVulnerabilities(string $path): array
+    public function process(string $path): ProcessorResult
     {
-        $vulnerabilities = [];
+        $result = new ProcessorResult();
 
         $xml = simplexml_load_file($path);
 
         foreach ($xml->report->results->result as $rawHost) {
-            $host = [
-                'name' => (string)$rawHost->host
-            ];
+            $hostAsset = new Asset(kind: AssetKind::Hostname, value: (string)$rawHost->host);
 
-            if(!empty($rawHost->port)) {
-                $host['port'] = (string)$rawHost->port;
+            if (!empty($rawHost->port)) {
+                $portAsset = new Asset(kind: AssetKind::Port, value: (string)$rawHost->port);
+                $hostAsset->addChild($portAsset);
             }
 
             foreach ($rawHost->nvt as $rawVulnerability) {
@@ -28,9 +28,9 @@ class OpenvasOutputProcessor extends AbstractCommandParser implements Vulnerabil
                 $vulnerability->summary = (string)$rawVulnerability->name . ' - ' . (string)$rawVulnerability->cve;
 
                 $tags = explode('|', (string)$rawVulnerability->tags);
-                foreach($tags as $tag) {
+                foreach ($tags as $tag) {
                     list($key, $value) = explode('=', $tag);
-                    switch($key) {
+                    switch ($key) {
                         case 'cvss_base_vector':
                             $vulnerability->cvss_vector = $value;
                             break;
@@ -43,19 +43,17 @@ class OpenvasOutputProcessor extends AbstractCommandParser implements Vulnerabil
                     }
                 }
 
-                
+
                 $vulnerability->external_refs = (string)$rawVulnerability->xref;
 
                 // @todo process refs/ref type[url] id
                 $vulnerability->description = preg_replace('/^ +/', '', (string)$rawVulnerability->description);
+                $vulnerability->severity = (string)$rawVulnerability->severity;
 
                 $risk = strtolower((string)$rawVulnerability->threat);
                 $vulnerability->risk = $risk;
 
-                //$vulnerability->remediation = $remediation;
-                // Dynamic props
-                $vulnerability->host = (object)$host;
-                $vulnerability->severity = (string)$rawVulnerability->severity;
+                $vulnerability->asset = $hostAsset;
 
                 if (isset($rawVulnerability->cvss_base_score)) {
                     $vulnerability->cvss_score = (float)$rawVulnerability->cvss_base_score;
@@ -64,10 +62,10 @@ class OpenvasOutputProcessor extends AbstractCommandParser implements Vulnerabil
                     $vulnerability->cvss_vector = (string)$rawVulnerability->cvss_vector;
                 }
 
-                $vulnerabilities[] = $vulnerability;
+                $result->addVulnerability($vulnerability);
             }
         }
 
-        return $vulnerabilities;
+        return $result;
     }
 }

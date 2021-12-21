@@ -2,13 +2,14 @@
 
 namespace Reconmap\CommandOutputParsers;
 
-class MetasploitsProcessorTest extends ParserTestCase
+class MetasploitsOutputProcessorTest extends ParserTestCase
 {
 
     public function testParseVulnerabilities()
     {
         $processor = new MetasploitOutputProcessor();
-        $vulnerabilities = $processor->parseVulnerabilities($this->getResourceFilePath('metasploit.xml'));
+        $result = $processor->process($this->getResourceFilePath('metasploit.xml'));
+        $vulnerabilities = $result->getVulnerabilities();
 
         $this->assertCount(2, $vulnerabilities);
         $this->assertEquals('exploit/windows/smb/ms08_067_netapi', $vulnerabilities[1]->summary);
