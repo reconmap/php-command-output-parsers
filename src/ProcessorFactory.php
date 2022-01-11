@@ -19,8 +19,7 @@ class ProcessorFactory
 
     public function getAll(): array
     {
-        $currentDir = __DIR__;
-        $fileIterator = new GlobIterator("$currentDir/*OutputProcessor.php");
+        $fileIterator = new GlobIterator(__DIR__ . '/*OutputProcessor.php');
 
         $list = [];
         foreach ($fileIterator as $file) {
