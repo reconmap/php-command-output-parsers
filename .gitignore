@@ -4,3 +4,4 @@ clover.xml
 .idea/
 tags
 tags.*
+results.sarif
