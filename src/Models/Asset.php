@@ -19,7 +19,7 @@ class Asset
         return $this->kind;
     }
 
-    public function addTag(string $tag) {
+    public function addTag(string $tag): void {
         $this->tags[] = $tag;
     }
 
@@ -27,7 +27,7 @@ class Asset
         return $this->tags;
     }
 
-    public function addChild(Asset $child) {
+    public function addChild(Asset $child): void {
         $this->children[] = $child;
     }
 
@@ -35,7 +35,7 @@ class Asset
         return $this->children;
     }
 
-    public function addVulnerability(Vulnerability $vulnerability) {
+    public function addVulnerability(Vulnerability $vulnerability): void {
         $this->vulnerabilities[] = $vulnerability;
     }
 

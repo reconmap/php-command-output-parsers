@@ -9,7 +9,7 @@ class ProcessorResult
         private array $vulnerabilities = []) {
     }
 
-    public function addAsset(Asset $asset) {
+    public function addAsset(Asset $asset): void {
         $this->assets[] = $asset;
     }
 
@@ -17,7 +17,7 @@ class ProcessorResult
         return $this->assets;
     }
 
-    public function addVulnerability(Vulnerability $vulnerability) {
+    public function addVulnerability(Vulnerability $vulnerability): void {
         $this->vulnerabilities[] = $vulnerability;
     }
 
