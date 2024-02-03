@@ -19,7 +19,7 @@
 
 ## Requirements
 
-* PHP8.1
+* [PHP8.2](https://www.php.net/releases/8.2/en.php)
 * Composer
 
 ## Usage
