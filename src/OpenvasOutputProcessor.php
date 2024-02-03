@@ -14,7 +14,9 @@ class OpenvasOutputProcessor extends AbstractOutputProcessor
         $result = new ProcessorResult();
 
         $xml = simplexml_load_file($path);
-
+	if(!$xml) {
+		return $result;
+	}
         foreach ($xml->report->results->result as $rawHost) {
             $hostAsset = new Asset(kind: AssetKind::Hostname, value: (string)$rawHost->host);
 

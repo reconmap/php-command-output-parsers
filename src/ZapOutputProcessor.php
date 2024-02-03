@@ -13,6 +13,9 @@ class ZapOutputProcessor extends AbstractOutputProcessor
         $result = new ProcessorResult();
 
         $xml = simplexml_load_file($path);
+	if(!$xml) {
+		return $result;
+	}
         foreach ($xml->site->alerts->alertitem as $alertItem) {
             $vulnerability = new Vulnerability;
             $vulnerability->summary = (string)$alertItem->alert;

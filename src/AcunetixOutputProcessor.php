@@ -13,6 +13,9 @@ class AcunetixOutputProcessor extends AbstractOutputProcessor
         $result = new ProcessorResult();
 
         $xml = simplexml_load_file($path);
+	if(!$xml) {
+		return $result;
+	}
 
         foreach ($xml->Scan->ReportItems->ReportItem as $reportItem) {
             $vulnerability = new Vulnerability();

@@ -14,7 +14,9 @@ class NessusOutputProcessor extends AbstractOutputProcessor
         $result = new ProcessorResult();
 
         $xml = simplexml_load_file($path);
-
+	if(!$xml) {
+		return $result;
+	}
         foreach ($xml->Report->ReportHost as $rawHost) {
             $asset = new Asset(kind: AssetKind::Hostname, value: (string)$rawHost['name']);
 

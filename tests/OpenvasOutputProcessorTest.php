@@ -14,7 +14,7 @@ class OpenvasOutputProcessorTest extends ParserTestCase
         $this->processor = new OpenvasOutputProcessor();
     }
 
-    public function dataProviderTestFiles(): array
+    public static function dataProviderTestFiles(): array
     {
         return [
             ['openvas-test0.xml', 6],

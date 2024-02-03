@@ -13,8 +13,8 @@ class TestsslOutputProcessor extends AbstractOutputProcessor
     {
         $result = new ProcessorResult();
 
-        $xml = json_decode(file_get_contents($path));
-        foreach ($xml->scanResult as $scanResult) {
+        $json = json_decode(file_get_contents($path));
+        foreach ($json->scanResult as $scanResult) {
             $hostAsset = new Asset(kind: AssetKind::Hostname, value: $scanResult->targetHost);
 
             foreach ($scanResult->vulnerabilities as $rawVulnerability) {

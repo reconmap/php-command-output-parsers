@@ -16,6 +16,9 @@ class QualysOutputProcessor extends AbstractOutputProcessor
         $result = new ProcessorResult();
 
         $xml = simplexml_load_file($path);
+	if(!$xml) {
+		return $result;
+	}
         foreach ($xml->HOST_LIST->HOST as $rawHost) {
             $host = new Asset(AssetKind::Hostname, (string)$rawHost->DNS);
             $result->addAsset($host);

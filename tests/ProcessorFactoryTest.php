@@ -18,7 +18,7 @@ class ProcessorFactoryTest extends TestCase
         $this->assertNull($this->processorFactory->createFromOutputParserName('foobar'));
     }
 
-    public function commandDataProvider(): array
+    public static function commandDataProvider(): array
     {
         return [
             ['burppro', BurpproOutputProcessor::class],

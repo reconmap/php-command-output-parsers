@@ -14,6 +14,9 @@ class NmapOutputProcessor extends AbstractOutputProcessor
         $result = new ProcessorResult();
 
         $xml = simplexml_load_file($path);
+	if(!$xml) {
+		return $result;
+	}
         foreach ($xml->host as $host) {
             $hostAddress = (string)$host->address['addr'];
             $hostAsset = new Asset(kind: AssetKind::Hostname, value: $hostAddress);

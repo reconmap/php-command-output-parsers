@@ -15,7 +15,9 @@ class BurpproOutputProcessor extends AbstractOutputProcessor
         $result = new ProcessorResult();
 
         $xml = simplexml_load_file($path);
-
+	if(!$xml) {
+		return $result;
+	}
         $markdown = new HtmlConverter();
 
         foreach ($xml->issue as $rawVulnerability) {
